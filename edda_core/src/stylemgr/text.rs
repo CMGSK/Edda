@@ -9,13 +9,19 @@ pub struct StyledText {
     pub style: Style,
 }
 
-impl StyledText {
-
-    pub fn new() -> Self {
+impl Default for StyledText {
+    fn default() -> Self {
         StyledText {
             text: String::new(),
             style: Style::new(),
         }
+    }
+}
+
+impl StyledText {
+
+    pub fn new(text: String, style: Style) -> Self {
+        StyledText { text, style }
     }
 
     pub fn apply_to_raw(&self) -> docx_rs::Run {
