@@ -1,6 +1,17 @@
 use std::{collections::VecDeque, fmt};
 
+use docx_rs::{Bold, Italic};
 use font_kit::source::SystemSource;
+
+pub enum ApplicableStyles {
+    Bold,
+    Italic,
+    Underline,
+    Size(u8),
+    Font(String),
+    Color(String),
+    Highlight(Option<String>)
+}
 
 /// Collection of text chunks with its own styles
 pub struct StyledParagraph {
@@ -147,23 +158,16 @@ impl StyledText {
 
     /// Change self style of written section calling on certain commands
     // TODO: Maybe this would be optimal receiving an enum
-    pub fn change_style(mut self, command: &str) {
+    pub fn change_style(mut self, command: ApplicableStyles) {
         let rollback = self.style.clone();
-        let new_style = match &command[..2] {
-            "bo" => Ok(self.style.switch_bold()),
-            "it" => Ok(self.style.switch_italic()),
-            "un" => Ok(self.style.switch_underline()),
-            "pt" => Ok(self.style.change_size(command[2..].parse::<u8>().unwrap())),
-            "fc" => self.style.change_font_color(String::from(&command[2..])),
-            "hc" => {
-                if command.len() > 2 {
-                    self.style
-                        .change_font_highlight(Some(String::from(&command[2..])))
-                } else {
-                    self.style.change_font_highlight(None)
-                }
-            }
-            _ => self.style.change_font(String::from(command)),
+        let new_style = match &command {
+            ApplicableStyles::Bold => Ok(self.style.switch_bold()),
+            ApplicableStyles::Italic => Ok(self.style.switch_italic()),
+            ApplicableStyles::Underline => Ok(self.style.switch_underline()),
+            ApplicableStyles::Size(n) => Ok(self.style.change_size(*n)),
+            ApplicableStyles::Color(s) => self.style.change_font_color(s.to_string()),
+            ApplicableStyles::Highlight(s) => self.style.change_font_highlight(s.clone()),
+            ApplicableStyles::Font(s) => self.style.change_font(s.to_string()),
         };
 
         self.style = new_style.unwrap_or(rollback);
