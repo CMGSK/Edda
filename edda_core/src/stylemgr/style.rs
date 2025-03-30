@@ -200,5 +200,134 @@ fn check_font(s: &str) -> Result<(), StyleError> {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*; // Import items from the outer module (Style, StyleError)
+
+    #[test]
+    fn test_style_new_defaults() {
+        let style = Style::new();
+        assert_eq!(style.bold(), false);
+        assert_eq!(style.italic(), false);
+        assert_eq!(style.underline(), None);
+        assert_eq!(style.size(), 11);
+        assert_eq!(style.font(), "Arial");
+        assert_eq!(style.font_color(), "#000000");
+        assert_eq!(style.highlight_color(), None);
+    }
+
+    #[test]
+    fn test_style_toggles() {
+        let style = Style::new();
+        assert_eq!(style.bold(), false);
+        let style = style.switch_bold();
+        assert_eq!(style.bold(), true);
+        let style = style.switch_bold();
+        assert_eq!(style.bold(), false);
+
+        let style = style.switch_italic();
+        assert_eq!(style.italic(), true);
+        let style = style.set_underline(Some(UnderlineStyle::Single));
+        assert_eq!(style.underline(), Some(&UnderlineStyle::Single));
+    }
+
+    #[test]
+    fn test_style_change_size() {
+        let style = Style::new().change_size(14);
+        assert_eq!(style.size(), 14);
+    }
+
+    #[test]
+    fn test_style_change_font_color_valid() {
+        let result = Style::new().change_font_color("#FF00AA".to_string());
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().font_color(), "#FF00AA");
+    }
+
+    #[test]
+    fn test_style_change_font_color_invalid_hex() {
+        let result = Style::new().change_font_color("FF00AA".to_string()); // Missing #
+        assert!(result.is_err());
+        assert!(matches!(
+            result.unwrap_err(),
+            StyleError::InvalidHexColor(_)
+        ));
+
+        let result = Style::new().change_font_color("#12345".to_string()); // Too short
+        assert!(result.is_err());
+        assert!(matches!(
+            result.unwrap_err(),
+            StyleError::InvalidHexColor(_)
+        ));
+
+        let result = Style::new().change_font_color("#GGHHII".to_string()); // Invalid chars
+        assert!(result.is_err());
+        assert!(matches!(
+            result.unwrap_err(),
+            StyleError::InvalidHexColor(_)
+        ));
+    }
+
+    #[test]
+    fn test_style_change_font_highlight() {
+        let result = Style::new().change_font_highlight(Some("#FFFF00".to_string()));
+        assert!(result.is_ok());
+        assert_eq!(result.as_ref().unwrap().highlight_color(), Some("#FFFF00"));
+
+        let result = result.unwrap().change_font_highlight(None);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().highlight_color(), None);
+
+        let result = Style::new().change_font_highlight(Some("Invalid".to_string()));
+        assert!(result.is_err());
+        assert!(matches!(
+            result.unwrap_err(),
+            StyleError::InvalidHexColor(_)
+        ));
+    }
+
+    #[test]
+    fn test_style_change_font_valid() {
+        // Assuming common fonts are available. Might fail in minimal environments.
+        let result = Style::new().change_font("Times New Roman".to_string());
+        // This check depends on the font being installed on the system running tests
+        if result.is_ok() {
+            assert_eq!(result.unwrap().font(), "Times New Roman");
+        } else {
+            // If font isn't found, don't fail the test, just acknowledge
+            println!("Test skipped: 'Times New Roman' not found.");
+        }
+    }
+
+    #[test]
+    fn test_style_change_font_invalid() {
+        let result = Style::new().change_font("DefinitelyNotAFontName123".to_string());
+        assert!(result.is_err());
+        assert!(matches!(result.unwrap_err(), StyleError::FontNotFound(_)));
+    }
+
+    #[test]
+    fn test_style_display_format() {
+        let style = Style::new();
+        assert_eq!(format!("{}", style), "pt(11);Arial;fc(#000000)");
+
+        let style = style.switch_bold().switch_italic();
+        assert_eq!(format!("{}", style), "bold;italic;pt(11);Arial;fc(#000000)");
+
+        let style = style
+            .change_font_highlight(Some("#00FF00".to_string()))
+            .unwrap();
+        assert_eq!(
+            format!("{}", style),
+            "bold;italic;hc(#00FF00);pt(11);Arial;fc(#000000)"
+        );
+
+        let style = Style::new()
+            .set_underline(Some(UnderlineStyle::Single))
+            .change_size(20);
+        assert_eq!(
+            format!("{}", style),
+            "underline(single);pt(20);Arial;fc(#000000)"
+        );
     }
 }
