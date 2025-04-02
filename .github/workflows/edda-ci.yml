@@ -2,7 +2,7 @@ name: Edda
 
 
 on:
-    push:
+    push
         branches:
             - main
             - master
@@ -32,7 +32,13 @@ jobs:
                 toolchain: stable
                 components: clippy, rustfmt
 
-            - name: 2.1-Cache cargo artifacts
+            - name: 2.1-Install system dependencies
+              run: |
+                sudo apt-get update -y
+                sudo apt-get install -y libfontconfig1-dev pkg-config
+              shell: bash
+
+            - name: 2.2-Cache cargo artifacts
               uses: actions/cache@v4
               with:
                 path: |
