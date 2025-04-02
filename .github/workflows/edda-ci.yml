@@ -2,7 +2,7 @@ name: Edda
 
 
 on:
-    push
+    push:
         branches:
             - main
             - master
