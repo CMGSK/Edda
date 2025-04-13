@@ -37,25 +37,29 @@ pub enum UnderlineStyle {
 
 impl fmt::Display for UnderlineStyle {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", match self {
-            UnderlineStyle::Single => "single",
-            UnderlineStyle::Words => "words",
-            UnderlineStyle::Double => "double",
-            UnderlineStyle::Thick => "thick",
-            UnderlineStyle::Dotted => "dotted",
-            UnderlineStyle::DottedHeavy => "dottedHeavy",
-            UnderlineStyle::Dash => "dash",
-            UnderlineStyle::DashedHeavy => "dashedHeavy",
-            UnderlineStyle::DashLong => "dashLong",
-            UnderlineStyle::DashLongHeavy => "dashLongHeavy",
-            UnderlineStyle::DotDash => "dotDash",
-            UnderlineStyle::DashDotHeavy => "dashDotHeavy",
-            UnderlineStyle::DotDotDash => "dotDotDash",
-            UnderlineStyle::DashDotDotHeavy => "dashDotDotHeavy",
-            UnderlineStyle::Wave => "wave",
-            UnderlineStyle::WavyHeavy => "wavyHeavy",
-            UnderlineStyle::WavyDouble => "wavyDouble",
-        })
+        write!(
+            f,
+            "{}",
+            match self {
+                UnderlineStyle::Single => "single",
+                UnderlineStyle::Words => "words",
+                UnderlineStyle::Double => "double",
+                UnderlineStyle::Thick => "thick",
+                UnderlineStyle::Dotted => "dotted",
+                UnderlineStyle::DottedHeavy => "dottedHeavy",
+                UnderlineStyle::Dash => "dash",
+                UnderlineStyle::DashedHeavy => "dashedHeavy",
+                UnderlineStyle::DashLong => "dashLong",
+                UnderlineStyle::DashLongHeavy => "dashLongHeavy",
+                UnderlineStyle::DotDash => "dotDash",
+                UnderlineStyle::DashDotHeavy => "dashDotHeavy",
+                UnderlineStyle::DotDotDash => "dotDotDash",
+                UnderlineStyle::DashDotDotHeavy => "dashDotDotHeavy",
+                UnderlineStyle::Wave => "wave",
+                UnderlineStyle::WavyHeavy => "wavyHeavy",
+                UnderlineStyle::WavyDouble => "wavyDouble",
+            }
+        )
     }
 }
 
