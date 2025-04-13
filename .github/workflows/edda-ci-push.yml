@@ -2,7 +2,9 @@ name: Edda CI on Push
 
 on:
     push:
-        branches: ["**"]
+        branches-ignore:
+            - 'main'
+            - 'master'
 
 jobs:
     check:
