@@ -37,25 +37,29 @@ pub enum UnderlineStyle {
 
 impl fmt::Display for UnderlineStyle {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", match self {
-            UnderlineStyle::Single => "single",
-            UnderlineStyle::Words => "words",
-            UnderlineStyle::Double => "double",
-            UnderlineStyle::Thick => "thick",
-            UnderlineStyle::Dotted => "dotted",
-            UnderlineStyle::DottedHeavy => "dottedHeavy",
-            UnderlineStyle::Dash => "dash",
-            UnderlineStyle::DashedHeavy => "dashedHeavy",
-            UnderlineStyle::DashLong => "dashLong",
-            UnderlineStyle::DashLongHeavy => "dashLongHeavy",
-            UnderlineStyle::DotDash => "dotDash",
-            UnderlineStyle::DashDotHeavy => "dashDotHeavy",
-            UnderlineStyle::DotDotDash => "dotDotDash",
-            UnderlineStyle::DashDotDotHeavy => "dashDotDotHeavy",
-            UnderlineStyle::Wave => "wave",
-            UnderlineStyle::WavyHeavy => "wavyHeavy",
-            UnderlineStyle::WavyDouble => "wavyDouble",
-        })
+        write!(
+            f,
+            "{}",
+            match self {
+                UnderlineStyle::Single => "single",
+                UnderlineStyle::Words => "words",
+                UnderlineStyle::Double => "double",
+                UnderlineStyle::Thick => "thick",
+                UnderlineStyle::Dotted => "dotted",
+                UnderlineStyle::DottedHeavy => "dottedHeavy",
+                UnderlineStyle::Dash => "dash",
+                UnderlineStyle::DashedHeavy => "dashedHeavy",
+                UnderlineStyle::DashLong => "dashLong",
+                UnderlineStyle::DashLongHeavy => "dashLongHeavy",
+                UnderlineStyle::DotDash => "dotDash",
+                UnderlineStyle::DashDotHeavy => "dashDotHeavy",
+                UnderlineStyle::DotDotDash => "dotDotDash",
+                UnderlineStyle::DashDotDotHeavy => "dashDotDotHeavy",
+                UnderlineStyle::Wave => "wave",
+                UnderlineStyle::WavyHeavy => "wavyHeavy",
+                UnderlineStyle::WavyDouble => "wavyDouble",
+            }
+        )
     }
 }
 
@@ -90,8 +94,8 @@ impl fmt::Display for Style {
     }
 }
 
-impl Style {
-    pub fn new() -> Self {
+impl Default for Style {
+    fn default() -> Self {
         Self {
             bold: false,
             italic: false,
@@ -101,6 +105,52 @@ impl Style {
             font_color: "#000000".into(),
             highlight_color: None,
         }
+    }
+}
+
+impl Style {
+    pub fn new(
+        bold: Option<bool>,
+        italic: Option<bool>,
+        underline: Option<UnderlineStyle>,
+        size: Option<u8>,
+        font: Option<String>,
+        font_color: Option<String>,
+        highlight_color: Option<String>,
+    ) -> Self {
+        let mut s = Style::default();
+        if bold.is_some() {
+            s = s.switch_bold();
+        }
+        if italic.is_some() {
+            s = s.switch_italic();
+        }
+        if underline.is_some() {
+            s = s.set_underline(underline);
+        }
+        if size.is_some() {
+            s = s.change_size(size.unwrap());
+        }
+        if font.is_some() {
+            s = match s.clone().change_font(font.unwrap()) {
+                Ok(s) => s,
+                Err(_) => s,
+            }
+        }
+        if font_color.is_some() {
+            s = match s.clone().change_font_color(font_color.unwrap()) {
+                Ok(s) => s,
+                Err(_) => s,
+            }
+        }
+        if highlight_color.is_some() {
+            s = match s.clone().change_font_color(highlight_color.unwrap()) {
+                Ok(s) => s,
+                Err(_) => s,
+            }
+        }
+
+        s
     }
 
     pub fn switch_bold(mut self) -> Self {
@@ -206,7 +256,7 @@ mod tests {
 
     #[test]
     fn test_style_new_defaults() {
-        let style = Style::new();
+        let style = Style::default();
         assert_eq!(style.bold(), false);
         assert_eq!(style.italic(), false);
         assert_eq!(style.underline(), None);
@@ -218,7 +268,7 @@ mod tests {
 
     #[test]
     fn test_style_toggles() {
-        let style = Style::new();
+        let style = Style::default();
         assert_eq!(style.bold(), false);
         let style = style.switch_bold();
         assert_eq!(style.bold(), true);
@@ -233,34 +283,34 @@ mod tests {
 
     #[test]
     fn test_style_change_size() {
-        let style = Style::new().change_size(14);
+        let style = Style::default().change_size(14);
         assert_eq!(style.size(), 14);
     }
 
     #[test]
     fn test_style_change_font_color_valid() {
-        let result = Style::new().change_font_color("#FF00AA".to_string());
+        let result = Style::default().change_font_color("#FF00AA".to_string());
         assert!(result.is_ok());
         assert_eq!(result.unwrap().font_color(), "#FF00AA");
     }
 
     #[test]
     fn test_style_change_font_color_invalid_hex() {
-        let result = Style::new().change_font_color("FF00AA".to_string()); // Missing #
+        let result = Style::default().change_font_color("FF00AA".to_string()); // Missing #
         assert!(result.is_err());
         assert!(matches!(
             result.unwrap_err(),
             StyleError::InvalidHexColor(_)
         ));
 
-        let result = Style::new().change_font_color("#12345".to_string()); // Too short
+        let result = Style::default().change_font_color("#12345".to_string()); // Too short
         assert!(result.is_err());
         assert!(matches!(
             result.unwrap_err(),
             StyleError::InvalidHexColor(_)
         ));
 
-        let result = Style::new().change_font_color("#GGHHII".to_string()); // Invalid chars
+        let result = Style::default().change_font_color("#GGHHII".to_string()); // Invalid chars
         assert!(result.is_err());
         assert!(matches!(
             result.unwrap_err(),
@@ -270,7 +320,7 @@ mod tests {
 
     #[test]
     fn test_style_change_font_highlight() {
-        let result = Style::new().change_font_highlight(Some("#FFFF00".to_string()));
+        let result = Style::default().change_font_highlight(Some("#FFFF00".to_string()));
         assert!(result.is_ok());
         assert_eq!(result.as_ref().unwrap().highlight_color(), Some("#FFFF00"));
 
@@ -278,7 +328,7 @@ mod tests {
         assert!(result.is_ok());
         assert_eq!(result.unwrap().highlight_color(), None);
 
-        let result = Style::new().change_font_highlight(Some("Invalid".to_string()));
+        let result = Style::default().change_font_highlight(Some("Invalid".to_string()));
         assert!(result.is_err());
         assert!(matches!(
             result.unwrap_err(),
@@ -289,7 +339,7 @@ mod tests {
     #[test]
     fn test_style_change_font_valid() {
         // Assuming common fonts are available. Might fail in minimal environments.
-        let result = Style::new().change_font("Times New Roman".to_string());
+        let result = Style::default().change_font("Times New Roman".to_string());
         // This check depends on the font being installed on the system running tests
         if result.is_ok() {
             assert_eq!(result.unwrap().font(), "Times New Roman");
@@ -301,14 +351,14 @@ mod tests {
 
     #[test]
     fn test_style_change_font_invalid() {
-        let result = Style::new().change_font("DefinitelyNotAFontName123".to_string());
+        let result = Style::default().change_font("DefinitelyNotAFontName123".to_string());
         assert!(result.is_err());
         assert!(matches!(result.unwrap_err(), StyleError::FontNotFound(_)));
     }
 
     #[test]
     fn test_style_display_format() {
-        let style = Style::new();
+        let style = Style::default();
         assert_eq!(format!("{}", style), "pt(11);Arial;fc(#000000)");
 
         let style = style.switch_bold().switch_italic();
@@ -322,7 +372,7 @@ mod tests {
             "bold;italic;hc(#00FF00);pt(11);Arial;fc(#000000)"
         );
 
-        let style = Style::new()
+        let style = Style::default()
             .set_underline(Some(UnderlineStyle::Single))
             .change_size(20);
         assert_eq!(
