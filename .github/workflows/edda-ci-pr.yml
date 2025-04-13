@@ -26,7 +26,6 @@ jobs:
                     brew install pkg-config fontconfig
                 elif [ "$RUNNER_OS" == "Windows" ]; then
                     choco install pkgconfiglite
-                    choco install fontconfig
                 fi
               shell: bash
 
@@ -78,7 +77,6 @@ jobs:
                     brew install pkg-config fontconfig
                 elif [ "$RUNNER_OS" == "Windows" ]; then
                     choco install pkgconfiglite
-                    choco install fontconfig
                 fi
               shell: bash
 
