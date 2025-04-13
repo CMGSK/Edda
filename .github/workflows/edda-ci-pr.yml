@@ -46,7 +46,7 @@ jobs:
               run: cargo fmt --all --check
 
             - name: Linting
-              run: cargo clippy --all-targets --all-features -- -D
+              run: cargo clippy --all-targets --all-features -- -D warnings
 
             - name: Check
               run: cargo check --all-targets --all-features
