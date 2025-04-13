@@ -16,7 +16,7 @@ impl Default for StyledText {
     fn default() -> Self {
         StyledText {
             text: String::new(),
-            style: Style::new(),
+            style: Style::default(),
         }
     }
 }
@@ -81,7 +81,7 @@ mod tests {
 
     #[test]
     fn test_styled_text_new() {
-        let style = Style::new().switch_bold();
+        let style = Style::default().switch_bold();
         let text = "Hello".to_string();
         let st = StyledText::new(text.clone(), style.clone());
 
@@ -104,7 +104,7 @@ mod tests {
 
     #[test]
     fn test_apply_style_tagging() {
-        let style = Style::new().switch_bold().change_size(14);
+        let style = Style::default().switch_bold().change_size(14);
         let text = "World".to_string();
         let st = StyledText::new(text.clone(), style);
 
@@ -117,7 +117,7 @@ mod tests {
 
     #[test]
     fn test_change_style_simple() {
-        let mut st = StyledText::new("Test".to_string(), Style::new());
+        let mut st = StyledText::new("Test".to_string(), Style::default());
 
         assert!(!st.style.bold());
         let result = st.change_style(ApplicableStyles::Bold);
@@ -138,7 +138,7 @@ mod tests {
 
     #[test]
     fn test_change_style_color_valid() {
-        let mut st = StyledText::new("Color".to_string(), Style::new());
+        let mut st = StyledText::new("Color".to_string(), Style::default());
         let result = st.change_style(ApplicableStyles::Color("#112233".to_string()));
         assert!(result.is_ok());
         assert_eq!(st.style.font_color(), "#112233");
@@ -146,7 +146,7 @@ mod tests {
 
     #[test]
     fn test_change_style_color_invalid() {
-        let mut st = StyledText::new("Color".to_string(), Style::new());
+        let mut st = StyledText::new("Color".to_string(), Style::default());
         let original_color = st.style.font_color().to_string();
 
         let result = st.change_style(ApplicableStyles::Color("InvalidHex".to_string()));
@@ -161,7 +161,7 @@ mod tests {
 
     #[test]
     fn test_change_style_font_invalid() {
-        let mut st = StyledText::new("Font".to_string(), Style::new());
+        let mut st = StyledText::new("Font".to_string(), Style::default());
         let original_font = st.style.font().to_string();
 
         let result = st.change_style(ApplicableStyles::Font(
@@ -176,7 +176,7 @@ mod tests {
     // Optional: Basic check for apply_to_raw
     #[test]
     fn test_apply_to_raw_runs() {
-        let st = StyledText::new("Test Run".to_string(), Style::new());
+        let st = StyledText::new("Test Run".to_string(), Style::default());
         let _run = st.apply_to_raw(); // Prefixed with _ to mark as unused
         // Basic check: Ensure it returns a Run object. More detailed checks are complex.
         assert!(std::any::TypeId::of::<Run>() == std::any::TypeId::of::<docx_rs::Run>());
@@ -186,7 +186,7 @@ mod tests {
 
     #[test]
     fn test_change_style_underline() {
-        let mut st = StyledText::new("Underline".to_string(), Style::new());
+        let mut st = StyledText::new("Underline".to_string(), Style::default());
 
         assert_eq!(st.style.underline(), None);
         let result = st.change_style(ApplicableStyles::Underline(Some(UnderlineStyle::Double)));

@@ -5,9 +5,7 @@ use std::path::Path;
 use std::{fs::File, io};
 use thiserror::Error;
 
-use docx_rs::{
-    Bold, DocumentChild, Docx, Paragraph, ParagraphChild, ReaderError, RunChild, read, read_docx,
-};
+use docx_rs::{DocumentChild, Docx, Paragraph, ParagraphChild, ReaderError, RunChild, read_docx};
 
 use crate::stylemgr::structural::StyledParagraph;
 #[allow(unused_imports)]
@@ -21,6 +19,17 @@ pub enum DocumentErr {
     OpenDocxError(std::io::Error),
     #[error("Could not read the docx document: {0}")]
     ReadDocxError(ReaderError),
+}
+
+impl From<std::io::Error> for DocumentErr {
+    fn from(value: std::io::Error) -> Self {
+        DocumentErr::OpenDocxError(value)
+    }
+}
+impl From<ReaderError> for DocumentErr {
+    fn from(value: ReaderError) -> Self {
+        DocumentErr::ReadDocxError(value)
+    }
 }
 
 pub struct Document {
