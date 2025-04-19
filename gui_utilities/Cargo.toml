@@ -1,0 +1,9 @@
+[package]
+name = "edda_gui_util"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+thiserror = { workspace = true }
+gtk4 = { workspace = true }
+glib = { workspace = true }
