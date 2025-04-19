@@ -3,6 +3,21 @@ name = "edda_writer"
 version = "0.1.0"
 edition = "2024"
 
-[dependencies]
-filemgr = { path = "edda_core" }
+[workspace]
+members = [
+    "edda_core",
+    "gui_utilities"
+]
+
+[workspace.dependencies]
 thiserror = "2.0.12"
+gtk4 = "0.9"
+glib = "0.20.9"
+
+[dependencies]
+filemgr = { path = "./edda_core" }
+edda_gui_util = { path = "./gui_utilities" }
+
+gtk4 = { workspace = true }
+glib = { workspace = true }
+thiserror = { workspace = true }
