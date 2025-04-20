@@ -237,6 +237,7 @@ version = "0.1.0"
 dependencies = [
  "edda_gui_util",
  "filemgr",
+ "gdk4",
  "glib",
  "gtk4",
  "thiserror 2.0.12",
