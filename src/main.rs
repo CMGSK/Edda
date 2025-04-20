@@ -3,6 +3,8 @@ use gtk4::prelude::*;
 use gtk4::{Application, ApplicationWindow, Button, HeaderBar, Label, TextView};
 use gtk4::{ScrolledWindow, TextBuffer, WrapMode};
 
+use edda_gui_util::pop_ups::{DialogLevel, message};
+
 mod menus;
 
 const APP_ID: &str = "com.cmgsk.edda";
@@ -77,11 +79,17 @@ fn ui_builder(app: &Application) {
 
     let buf_clone = text_buffer.clone();
     b_save.connect_clicked(move |_| {
-        println!("Clicked save for: {buf_clone:?}");
+        let g = buf_clone.text(&buf_clone.start_iter(), &buf_clone.end_iter(), false);
+        println!("Clicked save for: {}", g);
     });
-    b_save_as.connect_clicked(move |_| {
-        println!("Unimplemented");
-    });
+    b_save_as.connect_clicked(clone!(
+        #[weak]
+        main_window,
+        move |_| {
+            message(&main_window, DialogLevel::Info, "Unimplemented", false);
+            println!("Unimplemented");
+        }
+    ));
     b_open.connect_clicked(clone!(
         #[weak]
         main_window,
