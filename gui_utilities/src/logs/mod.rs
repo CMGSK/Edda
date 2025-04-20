@@ -7,26 +7,28 @@ use std::time::{SystemTime, UNIX_EPOCH};
 fn get_log_folder() -> io::Result<PathBuf> {
     #[cfg(target_os = "linux")]
     {
-        let dir = Path::new("/var/log/edda");
+        let home = std::env::var("HOME").unwrap();
+        let dir = Path::new(&home).join(".local/share/edda/");
         if !dir.exists() {
-            std::fs::create_dir_all(dir)?;
+            std::fs::create_dir_all(&dir)?;
         }
-        Ok(dir.to_path_buf())
+        Ok(dir)
     }
     #[cfg(target_os = "macos")]
     {
-        let dir = Path::new("/var/log/edda");
+        let home = std::env::var("HOME").unwrap();
+        let dir = Path::new(&home).join("Library/Logs/Edda/");
         if !dir.exists() {
-            std::fs::create_dir_all(dir)?;
+            std::fs::create_dir_all(&dir)?;
         }
-        Ok(dir.to_path_buf())
+        Ok(dir)
     }
     #[cfg(target_os = "windows")]
     {
-        let p = std::env::var("ProgramData")?;
+        let p = std::env::var("APPDATA")?;
         let dir = Path::new(&p).join("edda");
         if !dir.exists() {
-            std::fs::create_dir(dir)?;
+            std::fs::create_dir_all(dir)?;
         }
         Ok(dir.to_path_buf())
     }
@@ -50,6 +52,7 @@ pub fn write(msg: String) -> io::Result<()> {
     let mut f = OpenOptions::new().append(true).create(true).open(log)?;
     f.write_all(msg.as_bytes())?;
 
+    println!("{msg}");
     Ok(())
 }
 
