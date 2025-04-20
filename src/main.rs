@@ -5,10 +5,11 @@ use gtk4::{ScrolledWindow, TextBuffer, WrapMode};
 
 mod menus;
 
-const APP_NAME: &str = "Edda - Office writer";
+const APP_ID: &str = "com.cmgsk.edda";
 fn main() -> ExitCode {
-    let app = Application::builder().application_id(APP_NAME).build();
+    let app = Application::builder().application_id(APP_ID).build();
     app.connect_activate(ui_builder);
+    println!("Serving UI...");
     app.run()
 }
 
@@ -66,7 +67,7 @@ fn ui_builder(app: &Application) {
     // --- Main window layout ---
     let main_window = ApplicationWindow::builder()
         .application(app)
-        .title(APP_NAME)
+        .title(APP_ID)
         .default_height(1920)
         .default_height(1080)
         .build();
@@ -93,4 +94,7 @@ fn ui_builder(app: &Application) {
             );
         }
     ));
+
+    println!("Main window ready to present.");
+    main_window.present()
 }
