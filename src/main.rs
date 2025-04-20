@@ -2,14 +2,13 @@ use edda_gui_util::{
     log,
     pop_ups::{DialogLevel, message},
 };
-use gdk4;
 use gdk4::Display;
-use gtk4::glib::{ExitCode, clone};
 use gtk4::prelude::*;
 use gtk4::{
-    Application, ApplicationWindow, Button, CssProvider, HeaderBar, Label, StyleContext, TextView,
+    Application, ApplicationWindow, Button, CssProvider, HeaderBar, Label, ScrolledWindow,
+    TextBuffer, TextView, WrapMode,
+    glib::{ExitCode, clone},
 };
-use gtk4::{ScrolledWindow, TextBuffer, WrapMode};
 
 mod menus;
 
