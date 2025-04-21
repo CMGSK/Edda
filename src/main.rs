@@ -78,8 +78,8 @@ fn ui_builder(app: &Application) {
     main_window.set_titlebar(Some(&header_bar));
 
     let window = gtk4::Box::new(Orientation::Vertical, 1);
-    window.append(&scrolled_window);
     window.append(&editor_builders::toolbars::create_edition_toolbar());
+    window.append(&scrolled_window);
 
     main_window.set_child(Some(&window));
 
