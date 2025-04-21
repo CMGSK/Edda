@@ -1,9 +1,14 @@
-use gtk4::glib::{ExitCode, clone};
+use edda_gui_util::{
+    log,
+    pop_ups::{DialogLevel, message},
+};
+use gdk4::Display;
 use gtk4::prelude::*;
-use gtk4::{Application, ApplicationWindow, Button, HeaderBar, Label, Orientation, TextView};
-use gtk4::{ScrolledWindow, TextBuffer, WrapMode};
-
-use edda_gui_util::pop_ups::{DialogLevel, message};
+use gtk4::{
+    Application, ApplicationWindow, Button, CssProvider, HeaderBar, Label, Orientation,
+    ScrolledWindow, TextBuffer, TextView, WrapMode,
+    glib::{ExitCode, clone},
+};
 
 mod editor_builders;
 mod menus;
@@ -11,9 +16,30 @@ mod menus;
 const APP_ID: &str = "com.cmgsk.edda";
 fn main() -> ExitCode {
     let app = Application::builder().application_id(APP_ID).build();
+
+    app.connect_startup(|_| load_css());
     app.connect_activate(ui_builder);
+
     println!("Serving UI...");
     app.run()
+}
+
+fn load_css() {
+    let provider = CssProvider::new();
+    log!(WAR, "Loading CSS on gtk is wrapped in unsafe code...");
+    provider.load_from_path("./assets/gtk.css");
+    log!(INF, "Valid CSS path.");
+
+    if let Some(screen) = Display::default() {
+        gtk4::style_context_add_provider_for_display(
+            &screen,
+            &provider,
+            gtk4::STYLE_PROVIDER_PRIORITY_USER,
+        );
+        log!(INF, "Loaded default theme.")
+    } else {
+        log!(WAR, "The CSS gtk style could not be applied.")
+    }
 }
 
 fn ui_builder(app: &Application) {
