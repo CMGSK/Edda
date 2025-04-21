@@ -1,10 +1,11 @@
 use gtk4::glib::{ExitCode, clone};
 use gtk4::prelude::*;
-use gtk4::{Application, ApplicationWindow, Button, HeaderBar, Label, TextView};
+use gtk4::{Application, ApplicationWindow, Button, HeaderBar, Label, Orientation, TextView};
 use gtk4::{ScrolledWindow, TextBuffer, WrapMode};
 
 use edda_gui_util::pop_ups::{DialogLevel, message};
 
+mod editor_builders;
 mod menus;
 
 const APP_ID: &str = "com.cmgsk.edda";
@@ -75,7 +76,12 @@ fn ui_builder(app: &Application) {
         .build();
 
     main_window.set_titlebar(Some(&header_bar));
-    main_window.set_child(Some(&scrolled_window));
+
+    let window = gtk4::Box::new(Orientation::Vertical, 1);
+    window.append(&scrolled_window);
+    window.append(&editor_builders::toolbars::create_edition_toolbar());
+
+    main_window.set_child(Some(&window));
 
     let buf_clone = text_buffer.clone();
     b_save.connect_clicked(move |_| {
