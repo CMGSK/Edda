@@ -5,11 +5,12 @@ use edda_gui_util::{
 use gdk4::Display;
 use gtk4::prelude::*;
 use gtk4::{
-    Application, ApplicationWindow, Button, CssProvider, HeaderBar, Label, ScrolledWindow,
-    TextBuffer, TextView, WrapMode,
+    Application, ApplicationWindow, Button, CssProvider, HeaderBar, Label, Orientation,
+    ScrolledWindow, TextBuffer, TextView, WrapMode,
     glib::{ExitCode, clone},
 };
 
+mod editor_builders;
 mod menus;
 
 const APP_ID: &str = "com.cmgsk.edda";
@@ -26,7 +27,7 @@ fn main() -> ExitCode {
 fn load_css() {
     let provider = CssProvider::new();
     log!(WAR, "Loading CSS on gtk is wrapped in unsafe code...");
-    provider.load_from_path("./assets/gtk.css");
+    provider.load_from_path("./src/assets/gtk.css");
     log!(INF, "Valid CSS path.");
 
     if let Some(screen) = Display::default() {
@@ -101,7 +102,12 @@ fn ui_builder(app: &Application) {
         .build();
 
     main_window.set_titlebar(Some(&header_bar));
-    main_window.set_child(Some(&scrolled_window));
+
+    let window = gtk4::Box::new(Orientation::Vertical, 1);
+    window.append(&editor_builders::toolbars::create_edition_toolbar());
+    window.append(&scrolled_window);
+
+    main_window.set_child(Some(&window));
 
     let buf_clone = text_buffer.clone();
     b_save.connect_clicked(move |_| {
