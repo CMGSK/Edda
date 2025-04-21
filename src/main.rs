@@ -27,7 +27,7 @@ fn main() -> ExitCode {
 fn load_css() {
     let provider = CssProvider::new();
     log!(WAR, "Loading CSS on gtk is wrapped in unsafe code...");
-    provider.load_from_path("./assets/gtk.css");
+    provider.load_from_path("./src/assets/gtk.css");
     log!(INF, "Valid CSS path.");
 
     if let Some(screen) = Display::default() {
