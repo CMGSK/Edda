@@ -23,7 +23,7 @@ pub enum ApplicableStyles {
 }
 
 /// Collection of text chunks with its own styles
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct StyledParagraph {
     pub raw: Vec<StyledText>,
 }

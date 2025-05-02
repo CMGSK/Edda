@@ -64,7 +64,7 @@ impl fmt::Display for UnderlineStyle {
 }
 
 /// A defined Style for a chunk of text.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Style {
     bold: bool,
     italic: bool,
