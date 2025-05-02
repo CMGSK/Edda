@@ -2,13 +2,13 @@ use std::fmt::Write;
 use std::path::Path;
 use std::{fs::File, io};
 
-use docx_rs::{Docx, Paragraph};
-use thiserror::Error;
 use crate::stylemgr::structural::StyledParagraph;
 #[allow(unused_imports)]
 use crate::stylemgr::style::Style;
 #[allow(unused_imports)]
 use crate::stylemgr::text::StyledText;
+use docx_rs::{Docx, Paragraph};
+use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum DocumentError {
@@ -17,7 +17,6 @@ pub enum DocumentError {
     #[error("Document packaging error: {0}")]
     DocxPackaging(String),
 }
-
 
 pub struct Document {
     content: Vec<StyledParagraph>,
@@ -57,84 +56,83 @@ impl Metadata {
         self.description = Some(description.into());
         self
     }
-    
+
     /// Sets the category
     pub fn with_category(mut self, category: impl Into<String>) -> Self {
         self.category = Some(category.into());
         self
     }
-    
+
     /// Sets the version
     pub fn with_version(mut self, version: impl Into<String>) -> Self {
         self.version = Some(version.into());
         self
     }
-    
+
     /// Sets the status
     pub fn with_status(mut self, status: impl Into<String>) -> Self {
         self.status = Some(status.into());
         self
     }
-    
+
     /// Sets the language
     pub fn with_language(mut self, language: impl Into<String>) -> Self {
         self.language = Some(language.into());
         self
     }
-    
+
     /// Sets the keywords
     pub fn with_keywords(mut self, keywords: Vec<String>) -> Self {
         self.keywords = Some(keywords);
         self
     }
-    
+
     // Getters
-    
+
     /// Returns the title of the document
     pub fn title(&self) -> &str {
         &self.title
     }
-    
+
     /// Returns the authors of the document, if set
     pub fn authors(&self) -> Option<&Vec<String>> {
         self.authors.as_ref()
     }
-    
+
     /// Returns the description of the document, if set
     pub fn description(&self) -> Option<&str> {
         self.description.as_deref()
     }
-    
+
     /// Returns the category of the document, if set
     pub fn category(&self) -> Option<&str> {
         self.category.as_deref()
     }
-    
+
     /// Returns the version of the document, if set
     pub fn version(&self) -> Option<&str> {
         self.version.as_deref()
     }
-    
+
     /// Returns the status of the document, if set
     pub fn status(&self) -> Option<&str> {
         self.status.as_deref()
     }
-    
+
     /// Returns the language of the document, if set
     pub fn language(&self) -> Option<&str> {
         self.language.as_deref()
     }
-    
+
     /// Returns the keywords of the document, if set
     pub fn keywords(&self) -> Option<&Vec<String>> {
         self.keywords.as_ref()
     }
 }
 
-
 impl Document {
     /// Create a blank document with the specified title
-    /// 
+    ///
     /// # Arguments
     /// * `title` - The title of the document
     pub fn new(title: impl Into<String>) -> Self {
@@ -145,7 +143,7 @@ impl Document {
     }
 
     /// Creates a new document with the given content and title
-    /// 
+    ///
     /// # Arguments
     /// * `title` - The title of the document
     /// * `content` - The initial content of the document
@@ -160,12 +158,12 @@ impl Document {
     pub fn get_metadata(&self) -> &Metadata {
         &self.metadata
     }
-    
+
     /// Returns a mutable reference to the document's metadata
     pub fn get_metadata_mut(&mut self) -> &mut Metadata {
         &mut self.metadata
     }
-    
+
     /// Sets the document's metadata
     pub fn set_metadata(&mut self, metadata: Metadata) -> &mut Self {
         self.metadata = metadata;
@@ -173,19 +171,19 @@ impl Document {
     }
 
     /// Adds a paragraph to the document
-    /// 
+    ///
     /// # Arguments
     /// * `paragraph` - The paragraph to add to the document
     pub fn add_paragraph(&mut self, paragraph: StyledParagraph) -> &mut Self {
         self.content.push(paragraph);
         self
     }
-    
+
     /// Removes a paragraph at the specified index
-    /// 
+    ///
     /// # Arguments
     /// * `index` - The index of the paragraph to remove
-    /// 
+    ///
     /// # Returns
     /// The removed paragraph, or None if the index is out of bounds
     pub fn remove_paragraph(&mut self, index: usize) -> Option<StyledParagraph> {
@@ -195,35 +193,35 @@ impl Document {
             None
         }
     }
-    
+
     /// Returns a reference to the paragraph at the specified index
-    /// 
+    ///
     /// # Arguments
     /// * `index` - The index of the paragraph to get
     pub fn get_paragraph(&self, index: usize) -> Option<&StyledParagraph> {
         self.content.get(index)
     }
-    
+
     /// Returns a mutable reference to the paragraph at the specified index
-    /// 
+    ///
     /// # Arguments
     /// * `index` - The index of the paragraph to get
     pub fn get_paragraph_mut(&mut self, index: usize) -> Option<&mut StyledParagraph> {
         self.content.get_mut(index)
     }
-    
+
     /// Returns the number of paragraphs in the document
     pub fn paragraph_count(&self) -> usize {
         self.content.len()
     }
-    
+
     /// Checks if the document is empty (contains no paragraphs)
     pub fn is_empty(&self) -> bool {
         self.content.is_empty()
     }
 
     /// Get full document as string
-    /// 
+    ///
     /// # Arguments
     /// * `tagged` - If true, includes style tags in the output
     pub fn get_text(&self, tagged: bool) -> String {
@@ -362,32 +360,35 @@ mod tests {
 
         Ok(())
     }
-    
+
     #[test]
     fn test_save_as_docx_io_error() {
         let doc = create_test_document();
         // Use a location that should be inaccessible for writing
-        // This is OS-specific, but /dev/null/invalid on Unix or an invalid device path on Windows 
+        // This is OS-specific, but /dev/null/invalid on Unix or an invalid device path on Windows
         // should generate an IO error
         #[cfg(unix)]
         let invalid_path = "/dev/null/invalid_path.docx";
         #[cfg(windows)]
         let invalid_path = "\\\\invalid-device\\nonexistent\\file.docx";
-        
+
         let result = doc.save_as_docx(invalid_path);
-        
+
         match result {
             Err(DocumentError::Io(e)) => {
                 // Verify it's an IO error
-                assert!(e.kind() == io::ErrorKind::NotFound || 
-                       e.kind() == io::ErrorKind::PermissionDenied ||
-                       e.kind() == io::ErrorKind::Other,
-                       "Expected NotFound, PermissionDenied or Other error kind, got {:?}", e.kind());
-            },
+                assert!(
+                    e.kind() == io::ErrorKind::NotFound
+                        || e.kind() == io::ErrorKind::PermissionDenied
+                        || e.kind() == io::ErrorKind::Other,
+                    "Expected NotFound, PermissionDenied or Other error kind, got {:?}",
+                    e.kind()
+                );
+            }
             _ => panic!("Expected an IO error, got {:?}", result),
         }
     }
-    
+
     #[test]
     fn test_error_display() {
         // Test IO error display
@@ -395,66 +396,66 @@ mod tests {
         let doc_err = DocumentError::Io(io_err);
         assert!(format!("{}", doc_err).contains("IO error"));
         assert!(format!("{}", doc_err).contains("file not found"));
-    
+
         // Test packaging error display
         let pkg_err = DocumentError::DocxPackaging("failed to package".into());
         assert!(format!("{}", pkg_err).contains("Document packaging error"));
         assert!(format!("{}", pkg_err).contains("failed to package"));
     }
-    
+
     #[test]
     fn test_document_paragraph_manipulation() {
         let mut doc = Document::new("Test Doc");
         assert!(doc.is_empty());
         assert_eq!(doc.paragraph_count(), 0);
-        
+
         // Add paragraphs
         let para1 = StyledParagraph::new();
         let para2 = StyledParagraph::new();
-        
+
         doc.add_paragraph(para1);
         assert_eq!(doc.paragraph_count(), 1);
         assert!(!doc.is_empty());
-        
+
         doc.add_paragraph(para2);
         assert_eq!(doc.paragraph_count(), 2);
-        
+
         // Get paragraph
         let para_ref = doc.get_paragraph(0);
         assert!(para_ref.is_some());
-        
+
         // Remove paragraph
         let removed = doc.remove_paragraph(0);
         assert!(removed.is_some());
         assert_eq!(doc.paragraph_count(), 1);
-        
+
         // Out of bounds access
         assert!(doc.get_paragraph(10).is_none());
         assert!(doc.get_paragraph_mut(10).is_none());
         assert!(doc.remove_paragraph(10).is_none());
     }
-    
+
     #[test]
     fn test_document_with_content() {
         let style = Style::new();
-        
+
         let mut para1 = StyledParagraph::new();
         para1.add(StyledText::new("Test content".to_string(), style.clone()));
-        
+
         let paras = vec![para1];
-        
+
         let doc = Document::with_content("With Content Doc", paras);
         assert_eq!(doc.paragraph_count(), 1);
         assert!(!doc.is_empty());
         assert_eq!(doc.get_text(false), "Test content");
     }
-    
+
     #[test]
     fn test_metadata_getters_and_setters() {
         let title = "Test Title";
         let authors = vec!["Author 1".to_string(), "Author 2".to_string()];
         let description = "Test Description";
-        
+
         let metadata = Metadata::new(title)
             .with_authors(authors.clone())
             .with_description(description)
@@ -463,7 +464,7 @@ mod tests {
             .with_status("Draft")
             .with_language("en-US")
             .with_keywords(vec!["test".to_string(), "example".to_string()]);
-        
+
         // Test getters
         assert_eq!(metadata.title(), title);
         assert_eq!(metadata.authors().unwrap(), &authors);
@@ -472,20 +473,23 @@ mod tests {
         assert_eq!(metadata.version().unwrap(), "1.0.0");
         assert_eq!(metadata.status().unwrap(), "Draft");
         assert_eq!(metadata.language().unwrap(), "en-US");
-        assert_eq!(metadata.keywords().unwrap(), &vec!["test".to_string(), "example".to_string()]);
-        
+        assert_eq!(
+            metadata.keywords().unwrap(),
+            &vec!["test".to_string(), "example".to_string()]
+        );
+
         // Test with Document
         let mut doc = Document::new("Original Title");
         doc.set_metadata(metadata);
-        
+
         let metadata_ref = doc.get_metadata();
         assert_eq!(metadata_ref.title(), "Test Title");
-        
+
         // Test mutable metadata
         let metadata_mut = doc.get_metadata_mut();
         let new_metadata = Metadata::new("New Title");
         *metadata_mut = new_metadata;
-        
+
         assert_eq!(doc.get_metadata().title(), "New Title");
     }
 }
