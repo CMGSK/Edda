@@ -6,7 +6,7 @@ use super::{
 };
 
 /// Chunk of text attached to a certain style
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct StyledText {
     pub text: String,
     pub style: Style,

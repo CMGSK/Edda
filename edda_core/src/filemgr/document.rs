@@ -45,96 +45,106 @@ impl Metadata {
         }
     }
 
-    /// Sets the authors
+    /// Sets the authors for the metadata. Consumes and returns `self` for chaining.
+    #[must_use = "Method call does nothing unless the result is used"]
     pub fn with_authors(mut self, authors: Vec<String>) -> Self {
         self.authors = Some(authors);
         self
     }
 
-    /// Sets the description
+    /// Sets the description for the metadata. Consumes and returns `self` for chaining.
+    #[must_use = "Method call does nothing unless the result is used"]
     pub fn with_description(mut self, description: impl Into<String>) -> Self {
         self.description = Some(description.into());
         self
     }
 
-    /// Sets the category
+    /// Sets the category for the metadata. Consumes and returns `self` for chaining.
+    #[must_use = "Method call does nothing unless the result is used"]
     pub fn with_category(mut self, category: impl Into<String>) -> Self {
         self.category = Some(category.into());
         self
     }
 
-    /// Sets the version
+    /// Sets the version for the metadata. Consumes and returns `self` for chaining.
+    #[must_use = "Method call does nothing unless the result is used"]
     pub fn with_version(mut self, version: impl Into<String>) -> Self {
         self.version = Some(version.into());
         self
     }
 
-    /// Sets the status
+    /// Sets the status for the metadata. Consumes and returns `self` for chaining.
+    #[must_use = "Method call does nothing unless the result is used"]
     pub fn with_status(mut self, status: impl Into<String>) -> Self {
         self.status = Some(status.into());
         self
     }
 
-    /// Sets the language
+    /// Sets the language for the metadata. Consumes and returns `self` for chaining.
+    #[must_use = "Method call does nothing unless the result is used"]
     pub fn with_language(mut self, language: impl Into<String>) -> Self {
         self.language = Some(language.into());
         self
     }
 
-    /// Sets the keywords
+    /// Sets the keywords for the metadata. Consumes and returns `self` for chaining.
+    #[must_use = "Method call does nothing unless the result is used"]
     pub fn with_keywords(mut self, keywords: Vec<String>) -> Self {
         self.keywords = Some(keywords);
         self
     }
 
-    // Getters
+    // --- Getters ---
 
-    /// Returns the title of the document
+    /// Returns a reference to the title string.
     pub fn title(&self) -> &str {
         &self.title
     }
 
-    /// Returns the authors of the document, if set
+    /// Returns an optional reference to the vector of author strings.
     pub fn authors(&self) -> Option<&Vec<String>> {
         self.authors.as_ref()
     }
 
-    /// Returns the description of the document, if set
+    /// Returns an optional reference to the description string slice.
     pub fn description(&self) -> Option<&str> {
         self.description.as_deref()
     }
 
-    /// Returns the category of the document, if set
+    /// Returns an optional reference to the category string slice.
     pub fn category(&self) -> Option<&str> {
         self.category.as_deref()
     }
 
-    /// Returns the version of the document, if set
+    /// Returns an optional reference to the version string slice.
     pub fn version(&self) -> Option<&str> {
         self.version.as_deref()
     }
 
-    /// Returns the status of the document, if set
+    /// Returns an optional reference to the status string slice.
     pub fn status(&self) -> Option<&str> {
         self.status.as_deref()
     }
 
-    /// Returns the language of the document, if set
+    /// Returns an optional reference to the language string slice.
     pub fn language(&self) -> Option<&str> {
         self.language.as_deref()
     }
 
-    /// Returns the keywords of the document, if set
+    /// Returns an optional reference to the vector of keyword strings.
     pub fn keywords(&self) -> Option<&Vec<String>> {
         self.keywords.as_ref()
     }
 }
 
 impl Document {
-    /// Create a blank document with the specified title
+    /// Creates a new, empty `Document` with the specified title.
+    ///
+    /// The document will have no paragraphs initially.
     ///
     /// # Arguments
-    /// * `title` - The title of the document
+    /// * `title` - The title for the new document. Accepts any type that implements `Into<String>`.
+    #[must_use = "Creating a new Document does nothing unless assigned"]
     pub fn new(title: impl Into<String>) -> Self {
         Self {
             content: Vec::new(),
@@ -142,11 +152,12 @@ impl Document {
         }
     }
 
-    /// Creates a new document with the given content and title
+    /// Creates a new `Document` with the given title and initial content.
     ///
     /// # Arguments
-    /// * `title` - The title of the document
-    /// * `content` - The initial content of the document
+    /// * `title` - The title for the new document. Accepts any type that implements `Into<String>`.
+    /// * `content` - A vector of `StyledParagraph`s to initialize the document with.
+    #[must_use = "Creating a new Document does nothing unless assigned"]
     pub fn with_content(title: impl Into<String>, content: Vec<StyledParagraph>) -> Self {
         Self {
             content,
@@ -154,38 +165,45 @@ impl Document {
         }
     }
 
-    /// Returns a reference to the document's metadata
+    /// Returns an immutable reference to the document's `Metadata`.
     pub fn get_metadata(&self) -> &Metadata {
         &self.metadata
     }
 
-    /// Returns a mutable reference to the document's metadata
+    /// Returns a mutable reference to the document's `Metadata`, allowing modification.
     pub fn get_metadata_mut(&mut self) -> &mut Metadata {
         &mut self.metadata
     }
 
-    /// Sets the document's metadata
+    /// Replaces the document's existing `Metadata` with the provided one.
+    /// Returns a mutable reference to `self` for chaining.
+    #[must_use = "Method call does nothing unless the result is used (or you don't need chaining)"]
     pub fn set_metadata(&mut self, metadata: Metadata) -> &mut Self {
         self.metadata = metadata;
         self
     }
 
-    /// Adds a paragraph to the document
+    /// Appends a `StyledParagraph` to the end of the document's content.
+    /// Returns a mutable reference to `self` for chaining.
     ///
     /// # Arguments
-    /// * `paragraph` - The paragraph to add to the document
+    /// * `paragraph` - The `StyledParagraph` to add.
+    #[must_use = "Method call does nothing unless the result is used (or you don't need chaining)"]
     pub fn add_paragraph(&mut self, paragraph: StyledParagraph) -> &mut Self {
         self.content.push(paragraph);
         self
     }
 
-    /// Removes a paragraph at the specified index
+    /// Removes the `StyledParagraph` at the specified index.
     ///
     /// # Arguments
-    /// * `index` - The index of the paragraph to remove
+    /// * `index` - The zero-based index of the paragraph to remove.
     ///
     /// # Returns
-    /// The removed paragraph, or None if the index is out of bounds
+    /// The removed `StyledParagraph` if the index was valid, otherwise `None`.
+    ///
+    /// # Panics
+    /// This method does not panic; it returns `None` for out-of-bounds indices.
     pub fn remove_paragraph(&mut self, index: usize) -> Option<StyledParagraph> {
         if index < self.content.len() {
             Some(self.content.remove(index))
@@ -194,36 +212,46 @@ impl Document {
         }
     }
 
-    /// Returns a reference to the paragraph at the specified index
+    /// Returns an optional immutable reference to the `StyledParagraph` at the specified index.
     ///
     /// # Arguments
-    /// * `index` - The index of the paragraph to get
+    /// * `index` - The zero-based index of the paragraph to retrieve.
+    ///
+    /// # Returns
+    /// `Some(&StyledParagraph)` if the index is valid, otherwise `None`.
     pub fn get_paragraph(&self, index: usize) -> Option<&StyledParagraph> {
         self.content.get(index)
     }
 
-    /// Returns a mutable reference to the paragraph at the specified index
+    /// Returns an optional mutable reference to the `StyledParagraph` at the specified index.
     ///
     /// # Arguments
-    /// * `index` - The index of the paragraph to get
+    /// * `index` - The zero-based index of the paragraph to retrieve mutably.
+    ///
+    /// # Returns
+    /// `Some(&mut StyledParagraph)` if the index is valid, otherwise `None`.
     pub fn get_paragraph_mut(&mut self, index: usize) -> Option<&mut StyledParagraph> {
         self.content.get_mut(index)
     }
 
-    /// Returns the number of paragraphs in the document
+    /// Returns the total number of paragraphs currently in the document.
     pub fn paragraph_count(&self) -> usize {
         self.content.len()
     }
 
-    /// Checks if the document is empty (contains no paragraphs)
+    /// Returns `true` if the document contains no paragraphs, `false` otherwise.
     pub fn is_empty(&self) -> bool {
         self.content.is_empty()
     }
 
-    /// Get full document as string
+    /// Renders the entire document content as a single `String`.
     ///
     /// # Arguments
-    /// * `tagged` - If true, includes style tags in the output
+    /// * `tagged` - If `true`, includes inline style tags (e.g., `[[Style...]]Text[[/Style...]]`)
+    ///              in the output string. If `false`, only the raw text content is included.
+    ///
+    /// # Returns
+    /// A `String` containing the concatenated text of all paragraphs.
     pub fn get_text(&self, tagged: bool) -> String {
         let mut buffer = String::with_capacity(self.content.len() * 100);
 
@@ -239,6 +267,19 @@ impl Document {
         buffer
     }
 
+    /// Saves the document content as a DOCX file to the specified path.
+    ///
+    /// This method iterates through the `StyledParagraph`s and `StyledText`s,
+    /// converting them into the `docx_rs` representation and then packaging them
+    /// into a .docx file.
+    ///
+    /// # Arguments
+    /// * `path` - The file system path where the .docx file should be saved. Accepts any type
+    ///            that implements `AsRef<Path>`.
+    ///
+    /// # Errors
+    /// Returns `DocumentError::Io` if there's an issue creating or writing to the file.
+    /// Returns `DocumentError::DocxPackaging` if `docx_rs` encounters an error during packaging.
     pub fn save_as_docx<P: AsRef<Path>>(&self, path: P) -> Result<(), DocumentError> {
         let mut document = Docx::new();
 
@@ -296,11 +337,17 @@ mod tests {
     fn test_document_new() {
         let title = "My Document";
         let doc = Document::new(title);
+
+        // Check content is empty
         assert!(doc.content.is_empty());
-        assert_eq!(doc.metadata.title, title);
-        assert!(doc.metadata.authors.is_none());
-        assert!(doc.metadata.description.is_none());
-        // ... check other metadata fields if needed ...
+        assert!(doc.is_empty()); // Also check the helper method
+
+        // Check metadata against a default instance with the same title
+        let expected_metadata = Metadata {
+            title: title.to_string(),
+            ..Default::default()
+        };
+        assert_eq!(doc.metadata, expected_metadata);
     }
 
     #[test]
@@ -413,23 +460,46 @@ mod tests {
         let para1 = StyledParagraph::new();
         let para2 = StyledParagraph::new();
 
-        doc.add_paragraph(para1);
+        let _ = doc.add_paragraph(para1);
         assert_eq!(doc.paragraph_count(), 1);
         assert!(!doc.is_empty());
 
-        doc.add_paragraph(para2);
+        let _ = doc.add_paragraph(para2);
         assert_eq!(doc.paragraph_count(), 2);
 
-        // Get paragraph
+        // Get paragraph (immutable)
         let para_ref = doc.get_paragraph(0);
         assert!(para_ref.is_some());
+        // Ensure it's the first one we added (though they are empty here)
+        assert_eq!(para_ref.unwrap(), &StyledParagraph::new()); // Compare with a default empty one
 
-        // Remove paragraph
+        // Get paragraph (mutable) - Test modification
+        let para_mut = doc.get_paragraph_mut(1);
+        assert!(para_mut.is_some());
+        let style = Style::new().switch_bold();
+        let text = StyledText::new("Modified".to_string(), style);
+        para_mut.unwrap().add(text.clone());
+
+        // Verify modification via immutable getter
+        let para_ref_modified = doc.get_paragraph(1);
+        assert!(para_ref_modified.is_some());
+        assert_eq!(para_ref_modified.unwrap().raw.len(), 1);
+        assert_eq!(para_ref_modified.unwrap().raw[0], text);
+
+        // Remove paragraph and verify return value
+        // Re-create para1 for comparison, as the original was moved
+        let para1_original = StyledParagraph::new();
         let removed = doc.remove_paragraph(0);
         assert!(removed.is_some());
+        assert_eq!(removed.unwrap(), para1_original); // Check if the correct paragraph was removed
         assert_eq!(doc.paragraph_count(), 1);
 
-        // Out of bounds access
+        // Check remaining paragraph is the modified one
+        assert_eq!(doc.get_paragraph(0).unwrap().raw.len(), 1);
+        assert_eq!(doc.get_paragraph(0).unwrap().raw[0], text);
+
+        // Out of bounds access checks
+        assert!(doc.get_paragraph(1).is_none()); // Index 1 is now out of bounds
         assert!(doc.get_paragraph(10).is_none());
         assert!(doc.get_paragraph_mut(10).is_none());
         assert!(doc.remove_paragraph(10).is_none());
@@ -480,7 +550,7 @@ mod tests {
 
         // Test with Document
         let mut doc = Document::new("Original Title");
-        doc.set_metadata(metadata);
+        let _ = doc.set_metadata(metadata);
 
         let metadata_ref = doc.get_metadata();
         assert_eq!(metadata_ref.title(), "Test Title");
